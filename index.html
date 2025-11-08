@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贺林枫的网站</title>
+    <link rel="stylesheet" href="./css/style.css"> <!-- 引入 CSS -->
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav>
+            <div class="logo">贺林枫的网站</div>
+            <ul>
+                <li><a href="#home">首页</a></li>
+                <li><a href="#about">关于我</a></li>
+                <li><a href="#works">我的作品</a></li>
+                <li><a href="#contact">联系方式</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 主页横幅 -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>你好，我是贺林枫</h1>
+            <p>欢迎来到我的个人网站</p>
+            <a href="#about" class="btn">了解更多</a>
+        </div>
+    </section>
+
+    <!-- 关于我 -->
+    <section id="about" class="about">
+        <h2>关于我</h2>
+        <div class="about-content">
+            <img src="images/avatar.jpg" alt="贺林枫头像" class="avatar">
+            <p>
+                一个普通人
+            </p>
+        </div>
+    </section>
+
+    <!-- 我的作品 -->
+<section id="works" class="works">
+    <h2>我的作品</h2>
+    <div class="works-link-container">
+        <!-- 将 href 的值替换为你的作品集或个人项目的实际链接 -->
+        <a href="https://github.com/yourusername" target="_blank" class="works-link btn">
+            查看我的 GitHub 项目
+        </a>
+        <p>或者访问我的 <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank">文字和谐处理脚本</a> 查看更多演示。</p>
+    </div>
+</section>
+
+    <!-- 联系方式 -->
+    <section id="contact" class="contact">
+        <h2>联系方式</h2>
+        <form class="contact-form">
+            <input type="text" placeholder="姓名" required>
+            <input type="email" placeholder="邮箱" required>
+            <textarea placeholder="留言内容" required></textarea>
+            <button type="submit" class="btn">发送留言</button>
+        </form>
+        <div class="contact-info">
+            <p>邮箱：1340933251@qq.com</p>
+            <p>微信：H1895480951</p>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2025 贺林枫的网站. All rights reserved.</p>
+    </footer>
+
+    <!-- 引入 JavaScript -->
+    <script src="./js/script.js"></script>
+</body>
+</html>
