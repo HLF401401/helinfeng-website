@@ -5,6 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>贺林枫的网站</title>
     <link rel="stylesheet" href="./css/style.css"> <!-- 引入 CSS -->
+    <style>
+        /* 验证码样式（适配原有网站风格，避免冲突） */
+        .captcha-wrapper {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap; /* 适配移动端换行 */
+        }
+
+        #captchaCanvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        #captchaCanvas:hover {
+            border-color: #666;
+        }
+
+        #captchaInput {
+            padding: 8px 10px;
+            width: 120px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s;
+            font-size: 14px;
+        }
+
+        #captchaInput:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+        }
+
+        .captcha-message {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            height: 20px;
+            color: #e53e3e; /* 默认错误色 */
+        }
+
+        .captcha-message.success {
+            color: #48bb78; /* 成功色 */
+        }
+
+        /* 确保与原有 btn 样式兼容 */
+        .contact-form .btn {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <!-- 头部导航 -->
@@ -41,24 +93,32 @@
     </section>
 
     <!-- 我的作品 -->
-<section id="works" class="works">
-    <h2>我的作品</h2>
-    <div class="works-link-container">
-        <!-- 将 href 的值替换为你的作品集或个人项目的实际链接 -->
-        <a href="https://github.com/yourusername" target="_blank" class="works-link btn">
-            登录 GitHub 
-        </a>
-        <p>或者访问我的 <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank">文字和谐处理脚本</a> 查看更多演示。</p>
-    </div>
-</section>
+    <section id="works" class="works">
+        <h2>我的作品</h2>
+        <div class="works-link-container">
+            <!-- 将 href 的值替换为你的作品集或个人项目的实际链接 -->
+            <a href="https://github.com/yourusername" target="_blank" class="works-link btn">
+                登录 GitHub 
+            </a>
+            <p>或者访问我的 <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank">文字和谐处理脚本</a> 查看更多演示。</p>
+        </div>
+    </section>
 
     <!-- 联系方式 -->
     <section id="contact" class="contact">
         <h2>联系方式</h2>
-        <form class="contact-form">
+        <form class="contact-form" id="messageForm">
             <input type="text" placeholder="姓名" required>
             <input type="email" placeholder="邮箱" required>
             <textarea placeholder="留言内容" required></textarea>
+            
+            <!-- 嵌套验证码模块 -->
+            <div class="captcha-wrapper">
+                <canvas id="captchaCanvas" width="160" height="50"></canvas>
+                <input type="text" id="captchaInput" placeholder="请输入验证码" maxlength="4" required>
+            </div>
+            <div class="captcha-message" id="captchaMessage"></div>
+            
             <button type="submit" class="btn">发送留言</button>
         </form>
         <div class="contact-info">
@@ -74,5 +134,140 @@
 
     <!-- 引入 JavaScript -->
     <script src="./js/script.js"></script>
+    <script>
+        // 验证码模块（使用IIFE封装，避免与原有script.js变量冲突）
+        (function() {
+            // 获取验证码相关DOM元素（限定作用域，避免冲突）
+            const canvas = document.getElementById('captchaCanvas');
+            const ctx = canvas.getContext('2d');
+            const captchaInput = document.getElementById('captchaInput');
+            const captchaMessage = document.getElementById('captchaMessage');
+            const messageForm = document.getElementById('messageForm'); // 留言表单
+
+            // 验证码字符集（去除易混淆字符）
+            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
+            let validCode = ''; // 存储生成的验证码（变量名加前缀，避免冲突）
+            let isCaptchaValid = false; // 验证码是否验证通过
+
+            // 生成随机数
+            function randomNum(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+
+            // 生成随机颜色
+            function randomColor(min, max) {
+                const r = randomNum(min, max);
+                const g = randomNum(min, max);
+                const b = randomNum(min, max);
+                return `rgb(${r},${g},${b})`;
+            }
+
+            // 绘制验证码
+            function drawCaptcha() {
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制背景
+                ctx.fillStyle = randomColor(240, 255);
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 重置验证码
+                validCode = '';
+                
+                // 绘制4个随机字符
+                for (let i = 0; i < 4; i++) {
+                    const char = chars[randomNum(0, chars.length - 1)];
+                    validCode += char;
+
+                    // 字符样式
+                    ctx.font = `${randomNum(28, 36)}px Arial, sans-serif`;
+                    ctx.fillStyle = randomColor(50, 160);
+                    ctx.textBaseline = 'middle';
+
+                    // 随机旋转
+                    const angle = randomNum(-30, 30) * Math.PI / 180;
+                    ctx.save();
+                    ctx.translate(40 * i + 20, canvas.height / 2);
+                    ctx.rotate(angle);
+                    ctx.fillText(char, -12, 0);
+                    ctx.restore();
+                }
+
+                // 绘制干扰线
+                for (let i = 0; i < 5; i++) {
+                    ctx.strokeStyle = randomColor(100, 200);
+                    ctx.lineWidth = randomNum(1, 2);
+                    ctx.beginPath();
+                    ctx.moveTo(randomNum(0, canvas.width), randomNum(0, canvas.height));
+                    ctx.lineTo(randomNum(0, canvas.width), randomNum(0, canvas.height));
+                    ctx.stroke();
+                }
+
+                // 绘制干扰点
+                for (let i = 0; i < 80; i++) {
+                    ctx.fillStyle = randomColor(150, 220);
+                    ctx.beginPath();
+                    ctx.arc(
+                        randomNum(0, canvas.width),
+                        randomNum(0, canvas.height),
+                        1,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+
+                // 重置验证状态
+                isCaptchaValid = false;
+                captchaMessage.textContent = '';
+            }
+
+            // 验证验证码
+            function verifyCaptcha() {
+                const inputVal = captchaInput.value.trim().toUpperCase();
+
+                if (!inputVal) {
+                    captchaMessage.textContent = '请输入验证码';
+                    captchaMessage.className = 'captcha-message';
+                    return false;
+                }
+
+                if (inputVal === validCode.toUpperCase()) {
+                    captchaMessage.textContent = '验证成功';
+                    captchaMessage.className = 'captcha-message success';
+                    isCaptchaValid = true;
+                    return true;
+                } else {
+                    captchaMessage.textContent = '验证码错误，请重新输入';
+                    captchaMessage.className = 'captcha-message';
+                    drawCaptcha(); // 刷新验证码
+                    captchaInput.value = '';
+                    isCaptchaValid = false;
+                    return false;
+                }
+            }
+
+            // 初始化验证码
+            drawCaptcha();
+
+            // 事件绑定（限定作用域）
+            canvas.addEventListener('click', drawCaptcha); // 点击刷新验证码
+            captchaInput.addEventListener('blur', verifyCaptcha); // 失去焦点时验证
+            captchaInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') verifyCaptcha(); // 回车验证
+            });
+
+            // 表单提交前验证（确保验证码通过才提交）
+            messageForm.addEventListener('submit', (e) => {
+                // 先验证验证码
+                const captchaPass = verifyCaptcha();
+                if (!captchaPass) {
+                    e.preventDefault(); // 验证码失败，阻止表单提交
+                    alert('请先完成验证码验证');
+                }
+                // 验证码通过后，会继续执行原有表单提交逻辑（如发送邮件）
+            });
+        })();
+    </script>
 </body>
 </html>
