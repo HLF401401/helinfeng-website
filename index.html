@@ -166,6 +166,99 @@
         }
     </style>
 </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QQ邮箱留言直达</title>
+    <!-- 引入Axios（处理接口请求） -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        h2 {
+            color: #2d3748;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            padding-top: 12px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #3182ce;
+        }
+        .tip {
+            margin-top: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .success {
+            color: #10b981;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .loading {
+            color: #64748b;
+        }
+    </style>
+</head>
 <body>
     <!-- 欢迎弹窗（HTML结构不变） -->
     <div class="modal-mask" id="modalMask">
@@ -220,22 +313,38 @@
             <p>或者访问我的 <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank">文字和谐处理脚本</a> 查看更多演示。</p>
         </div>
     </section>
+    <div class="container">
+        <h2>留言反馈（QQ邮箱直达）</h2>
+        
+        <div class="form-group">
+            <label for="qqEmail">你的QQ邮箱（将作为发件人）</label>
+            <input 
+                type="email" 
+                id="qqEmail" 
+                placeholder="例如：123456@qq.com" 
+                required
+            >
+        </div>
 
-    <section id="contact" class="contact">
-        <h2>联系方式</h2>
-        <form class="contact-form" id="messageForm">
-            <input type="text" placeholder="姓名" required>
-            <input type="email" placeholder="邮箱" required>
-            <textarea placeholder="留言内容" required></textarea>
-            
+        <div class="form-group">
+            <label for="message">留言内容</label>
+            <textarea 
+                id="message" 
+                placeholder="请输入你的反馈、建议或问题..." 
+                required
+            ></textarea>
+        </div>
             <div class="captcha-wrapper">
                 <canvas id="captchaCanvas" width="160" height="50"></canvas>
                 <input type="text" id="captchaInput" placeholder="请输入验证码" maxlength="4" required>
             </div>
             <div class="captcha-message" id="captchaMessage"></div>
             
-            <button type="submit" class="btn">发送留言</button>
-        </form>
+        <button onclick="submitMessage()">提交留言</button>
+        <p id="tip" class="tip"></p>
+    </div>
+    <section id="contact" class="contact">
+        <h2>联系方式</h2>
         <div class="contact-info">
             <p>邮箱：1340933251@qq.com</p>
             <p>微信：H18954806951</p>
@@ -382,6 +491,104 @@
                 }
             });
         })();
+    </script>
+</body>
+
+<body>
+    
+
+    <script>
+        // ！！！关键：后续后端部署后，替换为你的Vercel接口地址
+        const API_BASE_URL = "https://你的后端项目名.vercel.app";
+
+        /**
+         * 提交留言核心逻辑
+         */
+        async function submitMessage() {
+            // 获取DOM元素
+            const emailInput = document.getElementById("qqEmail");
+            const messageInput = document.getElementById("message");
+            const tipElement = document.getElementById("tip");
+            const submitBtn = document.querySelector("button");
+
+            // 获取输入值（去除首尾空格）
+            const senderEmail = emailInput.value.trim();
+            const messageContent = messageInput.value.trim();
+
+            // 1. 前端校验
+            if (!validateQQEmail(senderEmail)) {
+                showTip("请输入有效的QQ邮箱（格式：xxx@qq.com）", "error");
+                return;
+            }
+            if (messageContent.length === 0) {
+                showTip("留言内容不能为空哦～", "error");
+                return;
+            }
+            if (messageContent.length > 1000) {
+                showTip("留言内容不能超过1000字，请精简后提交", "error");
+                return;
+            }
+
+            // 2. 提交中状态（防止重复点击）
+            submitBtn.disabled = true;
+            submitBtn.textContent = "发送中...";
+            showTip("正在发送，请稍候...", "loading");
+
+            try {
+                // 3. 调用后端接口发送邮件
+                const response = await axios.post(
+                    `${API_BASE_URL}/api/send-direct`,
+                    {
+                        senderEmail: senderEmail, // 用户QQ邮箱（发件人）
+                        content: messageContent    // 留言内容
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+
+                // 4. 处理接口响应
+                if (response.data.success) {
+                    showTip("发送成功！你的留言已直达目标邮箱～", "success");
+                    // 清空输入框
+                    emailInput.value = "";
+                    messageInput.value = "";
+                } else {
+                    showTip(`发送失败：${response.data.message || "未知错误"}`, "error");
+                }
+            } catch (error) {
+                // 5. 捕获网络错误
+                console.error("接口请求失败：", error);
+                showTip("网络异常，请检查网络后重试", "error");
+            } finally {
+                // 6. 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.textContent = "提交留言";
+            }
+        }
+
+        /**
+         * 校验QQ邮箱格式
+         * @param {string} email - 待校验邮箱
+         * @returns {boolean} 校验结果
+         */
+        function validateQQEmail(email) {
+            const reg = /^[1-9]\d{4,10}@qq\.com$/; // QQ邮箱正则：5-11位数字（首位非0）+@qq.com
+            return reg.test(email);
+        }
+
+        /**
+         * 显示提示信息
+         * @param {string} text - 提示文本
+         * @param {string} type - 提示类型（success/error/loading）
+         */
+        function showTip(text, type) {
+            const tipElement = document.getElementById("tip");
+            tipElement.textContent = text;
+            tipElement.className = `tip ${type}`;
+        }
     </script>
 </body>
 </html>
