@@ -259,8 +259,7 @@
             background-color: #1a202c;
         }
     </style>
-</head>
-<head>
+    <!-- 合并重复的head标签，避免样式冲突 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QQ邮箱留言直达</title>
@@ -353,6 +352,7 @@
         }
     </style>
 </head>
+<!-- 保留唯一的body标签，删除重复的body -->
 <body>
     <!-- 欢迎弹窗（HTML结构不变） -->
     <div class="modal-mask" id="modalMask">
@@ -465,12 +465,12 @@
                 required
             ></textarea>
         </div>
-            <div class="captcha-wrapper">
-                <canvas id="captchaCanvas" width="160" height="50"></canvas>
-                <input type="text" id="captchaInput" placeholder="请输入验证码" maxlength="4" required>
-            </div>
-            <div class="captcha-message" id="captchaMessage"></div>
-            
+        <div class="captcha-wrapper">
+            <canvas id="captchaCanvas" width="160" height="50"></canvas>
+            <input type="text" id="captchaInput" placeholder="请输入验证码" maxlength="4" required>
+        </div>
+        <div class="captcha-message" id="captchaMessage"></div>
+        
         <button onclick="submitMessage()">提交留言</button>
         <p id="tip" class="tip"></p>
     </div>
@@ -488,7 +488,11 @@
 
     <script src="./js/script.js"></script>
     <script>
-        // 验证码模块（保持不变）
+        // 全局变量：用于存储验证码验证状态和函数，供外部调用
+        let validCode = '';
+        let isCaptchaValid = false;
+
+        // 验证码模块（修改为全局可访问）
         (function() {
             const canvas = document.getElementById('captchaCanvas');
             const ctx = canvas.getContext('2d');
@@ -497,21 +501,20 @@
             const messageForm = document.getElementById('messageForm');
 
             const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
-            let validCode = '';
-            let isCaptchaValid = false;
 
-            function randomNum(min, max) {
+            window.randomNum = function(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             }
 
-            function randomColor(min, max) {
+            window.randomColor = function(min, max) {
                 const r = randomNum(min, max);
                 const g = randomNum(min, max);
                 const b = randomNum(min, max);
                 return `rgb(${r},${g},${b})`;
             }
 
-            function drawCaptcha() {
+            // 验证码绘制函数（全局可访问）
+            window.drawCaptcha = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = randomColor(240, 255);
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -551,7 +554,8 @@
                 captchaMessage.textContent = '';
             }
 
-            function verifyCaptcha() {
+            // 验证码验证函数（全局可访问，供submitMessage调用）
+            window.verifyCaptcha = function() {
                 const inputVal = captchaInput.value.trim().toUpperCase();
                 if (!inputVal) {
                     captchaMessage.textContent = '请输入验证码';
@@ -573,6 +577,7 @@
                 }
             }
 
+            // 初始化验证码
             drawCaptcha();
             canvas.addEventListener('click', drawCaptcha);
             captchaInput.addEventListener('blur', verifyCaptcha);
@@ -625,16 +630,11 @@
                 }
             });
         })();
-    </script>
 
-    <script>
-        // ！！！关键：后续后端部署后，替换为你的Vercel接口地址
+        // 留言提交核心逻辑（保持不变，现在可正常调用verifyCaptcha）
         const API_BASE_URL = "https://mail-theta-one.vercel.app";
 
-        /**
-         * 提交留言核心逻辑
-         */
-        async function submitMessage() {
+        function submitMessage() {
             // 获取DOM元素
             const emailInput = document.getElementById("qqEmail");
             const messageInput = document.getElementById("message");
@@ -642,7 +642,7 @@
             const submitBtn = document.querySelector("button");
             const captchaInput = document.getElementById("captchaInput");
             
-            // 新增：提交前先验证验证码
+            // 验证验证码（现在可正常调用全局函数）
             const captchaValid = verifyCaptcha();
             if (!captchaValid) {
                 showTip("请先完成验证码验证", "error");
@@ -674,7 +674,7 @@
 
             try {
                 // 3. 调用后端接口发送邮件
-                const response = await axios.post(
+                axios.post(
                     `${API_BASE_URL}/api/send-direct`,
                     {
                         senderEmail: senderEmail, // 用户QQ邮箱（发件人）
@@ -685,26 +685,31 @@
                             "Content-Type": "application/json"
                         }
                     }
-                );
-
-                // 4. 处理接口响应
-                if (response.data.success) {
-                    showTip("发送成功！你的留言已直达目标邮箱～", "success");
-                    // 清空输入框
-                    emailInput.value = "";
-                    messageInput.value = "";
-                    captchaInput.value = "";
-                    // 刷新验证码
-                    drawCaptcha();
-                } else {
-                    showTip(`发送失败：${response.data.message || "未知错误"}`, "error");
-                }
+                ).then(response => {
+                    // 4. 处理接口响应
+                    if (response.data.success) {
+                        showTip("发送成功！你的留言已直达目标邮箱～", "success");
+                        // 清空输入框
+                        emailInput.value = "";
+                        messageInput.value = "";
+                        captchaInput.value = "";
+                        // 刷新验证码
+                        drawCaptcha();
+                    } else {
+                        showTip(`发送失败：${response.data.message || "未知错误"}`, "error");
+                    }
+                }).catch(error => {
+                    // 5. 捕获网络错误
+                    console.error("接口请求失败：", error);
+                    showTip("网络异常，请检查网络后重试", "error");
+                }).finally(() => {
+                    // 6. 恢复按钮状态
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "提交留言";
+                });
             } catch (error) {
-                // 5. 捕获网络错误
-                console.error("接口请求失败：", error);
-                showTip("网络异常，请检查网络后重试", "error");
-            } finally {
-                // 6. 恢复按钮状态
+                console.error("提交异常：", error);
+                showTip("系统异常，请稍后重试", "error");
                 submitBtn.disabled = false;
                 submitBtn.textContent = "提交留言";
             }
