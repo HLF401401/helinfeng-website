@@ -164,6 +164,100 @@
             border-color: #d1d5db;
             color: #111827;
         }
+
+        /* 新增：作品卡片样式（独立模块，不影响其他区域） */
+        .works {
+            padding: 60px 20px;
+            background-color: #f8f9fa;
+        }
+
+        .works h2 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 40px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .works-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* 作品卡片（可点击按钮样式） */
+        .work-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 35px 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none; /* 清除链接下划线 */
+        }
+
+        .work-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background-color: #fafafa;
+        }
+
+        .work-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #e8f4f8;
+        }
+
+        .work-icon svg {
+            width: 32px;
+            height: 32px;
+            color: #4299e1;
+        }
+
+        .work-title {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .work-desc {
+            font-size: 14px;
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        /* GitHub链接容器样式调整 */
+        .github-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .github-link .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background-color: #2d3748;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .github-link .btn:hover {
+            background-color: #1a202c;
+        }
     </style>
 </head>
 <head>
@@ -305,14 +399,51 @@
         </div>
     </section>
 
+    <!-- 优化后的“我的作品”板块：独立卡片+可点击跳转 -->
     <section id="works" class="works">
         <h2>我的作品</h2>
-        <div class="works-link-container">
-            <a href="https://github.com/yourusername" target="_blank" class="works-link btn">登录 GitHub </a>
-            <p>访问我的<a href="https://hlf401401.github.io/create-QRcode/" target="_blank">二维码生成器</a></p>
-            <p>或者访问我的 <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank">文字和谐处理脚本</a> 查看更多演示。</p>
+        
+        <!-- 作品卡片容器 -->
+        <div class="works-container">
+            <!-- 作品1：二维码生成器（卡片本身为可点击链接） -->
+            <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card">
+                <div class="work-icon">
+                    <!-- 二维码SVG图标（无需额外图片） -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <rect x="7" y="7" width="3" height="3"></rect>
+                        <rect x="7" y="14" width="3" height="3"></rect>
+                        <rect x="14" y="7" width="3" height="3"></rect>
+                        <rect x="14" y="14" width="3" height="3"></rect>
+                    </svg>
+                </div>
+                <h3 class="work-title">二维码生成器</h3>
+                <p class="work-desc">在线生成高清二维码，支持文本、网址等内容，可直接保存使用，简单便捷</p>
+            </a>
+
+            <!-- 作品2：文字和谐处理脚本（卡片本身为可点击链接） -->
+            <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card">
+                <div class="work-icon">
+                    <!-- 文字处理SVG图标（无需额外图片） -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <h3 class="work-title">文字和谐处理脚本</h3>
+                <p class="work-desc">自动识别敏感词汇，支持自定义关键词库，适用于内容审核、评论过滤场景</p>
+            </a>
+        </div>
+
+        <!-- GitHub链接（保持原有功能，样式优化） -->
+        <div class="github-link">
+            <a href="https://github.com/yourusername" target="_blank" class="btn">登录 GitHub</a>
         </div>
     </section>
+
     <div class="container">
         <h2>留言反馈（QQ邮箱直达）</h2>
         
@@ -448,13 +579,16 @@
             captchaInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') verifyCaptcha();
             });
-            messageForm.addEventListener('submit', (e) => {
-                const captchaPass = verifyCaptcha();
-                if (!captchaPass) {
-                    e.preventDefault();
-                    alert('请先完成验证码验证');
-                }
-            });
+            // 修复：原代码可能存在messageForm不存在的情况，添加判断
+            if (messageForm) {
+                messageForm.addEventListener('submit', (e) => {
+                    const captchaPass = verifyCaptcha();
+                    if (!captchaPass) {
+                        e.preventDefault();
+                        alert('请先完成验证码验证');
+                    }
+                });
+            }
         })();
 
         // 欢迎弹窗功能（保持不变）
@@ -492,10 +626,6 @@
             });
         })();
     </script>
-</body>
-
-<body>
-    
 
     <script>
         // ！！！关键：后续后端部署后，替换为你的Vercel接口地址
@@ -510,6 +640,14 @@
             const messageInput = document.getElementById("message");
             const tipElement = document.getElementById("tip");
             const submitBtn = document.querySelector("button");
+            const captchaInput = document.getElementById("captchaInput");
+            
+            // 新增：提交前先验证验证码
+            const captchaValid = verifyCaptcha();
+            if (!captchaValid) {
+                showTip("请先完成验证码验证", "error");
+                return;
+            }
 
             // 获取输入值（去除首尾空格）
             const senderEmail = emailInput.value.trim();
@@ -555,6 +693,9 @@
                     // 清空输入框
                     emailInput.value = "";
                     messageInput.value = "";
+                    captchaInput.value = "";
+                    // 刷新验证码
+                    drawCaptcha();
                 } else {
                     showTip(`发送失败：${response.data.message || "未知错误"}`, "error");
                 }
