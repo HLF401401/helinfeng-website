@@ -9,11 +9,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // 表单提交
-document.querySelector('.contact-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    alert('留言发送成功！感谢您的联系！');
-    this.reset();
-});
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('留言发送成功！感谢您的联系！');
+        this.reset();
+    });
+}
 
 // 页面滚动时导航栏样式变化
 window.addEventListener('scroll', function () {
@@ -26,3 +29,45 @@ window.addEventListener('scroll', function () {
         header.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
     }
 });
+
+function initSearch() {
+    const input = document.getElementById('worksSearch');
+    if (!input) return;
+    const cards = Array.from(document.querySelectorAll('.works .work-card'));
+
+    function normalize(s) {
+        return (s || '').toLowerCase().replace(/\s+/g, '');
+    }
+
+    function fuzzyIncludes(haystack, needle) {
+        haystack = normalize(haystack);
+        needle = normalize(needle);
+        if (!needle) return true;
+        let pos = 0;
+        for (const ch of needle) {
+            pos = haystack.indexOf(ch, pos);
+            if (pos === -1) return false;
+            pos++;
+        }
+        return true;
+    }
+
+    function filter() {
+        const q = input.value;
+        cards.forEach(card => {
+            const title = card.querySelector('.work-title')?.textContent || '';
+            const desc = card.querySelector('.work-desc')?.textContent || '';
+            const hit = fuzzyIncludes(title, q) || fuzzyIncludes(desc, q);
+            card.style.display = hit ? '' : 'none';
+        });
+    }
+
+    input.addEventListener('input', filter);
+    input.addEventListener('keyup', filter);
+}
+
+document.addEventListener('DOMContentLoaded', initSearch);
+
+setInterval(() => {
+    location.reload();
+}, 600000);

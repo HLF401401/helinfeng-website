@@ -57,6 +57,27 @@ nav ul li a:hover {
     color: #ff6b6b;
 }
 
+.search-input {
+    width: 220px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+    margin-left: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.works-search {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
 /* 主页横幅 */
 .hero {
     background: linear-gradient(135deg, #ff6b6b, #ee5a52);
