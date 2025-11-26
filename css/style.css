@@ -89,13 +89,17 @@ nav ul li a:hover {
 /* 作品卡片样式 */
 .card {
     position: relative;
-    width: 480px;
+    width: 400px;
     height: 200px;
     background: lightgrey;
     border-radius: 30px;
     overflow: hidden;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     transition: all 1s ease-in-out;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .background {
@@ -110,6 +114,7 @@ nav ul li a:hover {
     bottom: 50%;
     transform: translate(50%, 50%);
     transition: all 0.6s ease-in-out;
+    z-index: 1;
 }
 
 .logo .logo-svg {
@@ -266,6 +271,8 @@ nav ul li a:hover {
     padding: 5rem 2rem;
     text-align: center; /* 让容器内的所有内容居中 */
 }
+
+.works-container { justify-items: center; }
 
 .works h2 {
     text-align: center;
