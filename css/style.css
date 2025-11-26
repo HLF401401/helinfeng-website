@@ -56,6 +56,11 @@ nav ul li a {
 nav ul li a:hover {
     color: #ff6b6b;
 }
+
+.lang-switch { display:flex; gap:.5rem; align-items:center; }
+.lang-btn { padding:.5rem .9rem; border:1px solid #ddd; border-radius:20px; background:#fff; color:#333; font-size:.9rem; cursor:pointer; transition:all .2s ease; }
+.lang-btn:hover { border-color:#ff6b6b; color:#ff6b6b; }
+.lang-btn.active { border-color:#4299e1; color:#4299e1; }
 /* 搜索框 */
 /* 作品页搜索框（胶囊样式，统一边框与阴影） */
 .search-input {
