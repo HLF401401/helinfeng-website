@@ -402,12 +402,14 @@
     <!-- 优化后的“我的作品”板块：独立卡片+可点击跳转 -->
     <section id="works" class="works">
         <h2>我的作品</h2>
+        <!-- 搜索输入框：用于实时筛选作品卡片（支持模糊匹配） -->
         <div class="works-search">
             <input type="text" id="worksSearch" class="search-input" placeholder="搜索我的作品...">
         </div>
         <!-- 作品卡片容器 -->
         <div class="works-container">
             <!-- 作品1：二维码生成器（卡片本身为可点击链接） -->
+            <!-- 卡片组件：背景 + 标题（logo区） + 描述；移除四个插入框，简化 UI -->
             <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card card">
                 <div class="background"></div>
                 <div class="logo">
@@ -419,6 +421,7 @@
             </a>
 
             <!-- 作品2：文字和谐处理脚本（卡片本身为可点击链接） -->
+            <!-- 卡片组件：背景 + 标题（logo区） + 描述；移除四个插入框，简化 UI -->
             <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card card">
                 <div class="background"></div>
                 <div class="logo">
