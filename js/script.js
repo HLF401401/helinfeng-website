@@ -33,7 +33,7 @@ window.addEventListener('scroll', function () {
 function initSearch() {
     const input = document.getElementById('worksSearch');
     if (!input) return;
-    const cards = Array.from(document.querySelectorAll('.works .work-card'));
+    const cards = Array.from(document.querySelectorAll('.works .card, .works .work-card'));
 
     function normalize(s) {
         return (s || '').toLowerCase().replace(/\s+/g, '');

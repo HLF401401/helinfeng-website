@@ -56,26 +56,136 @@ nav ul li a {
 nav ul li a:hover {
     color: #ff6b6b;
 }
-
+/* 搜索框 */
 .search-input {
-    width: 220px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    font-size: 0.95rem;
-    transition: border-color 0.3s;
-    margin-left: 1rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin: 0;
 }
 
 .search-input:focus {
     outline: none;
     border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
 }
 
 .works-search {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto 2rem;
+    padding: 0 1rem;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
+}
+
+/* 作品卡片样式 */
+.card {
+    position: relative;
+    width: 480px;
+    height: 200px;
+    background: lightgrey;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    transition: all 1s ease-in-out;
+}
+
+.background {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 100% 107%, #ff89cc 0%, #9cb8ec 30%, #00ffee 60%, #62c2fe 100%);
+}
+
+.logo {
+    position: absolute;
+    right: 50%;
+    bottom: 50%;
+    transform: translate(50%, 50%);
+    transition: all 0.6s ease-in-out;
+}
+
+.logo .logo-svg {
+    fill: white;
+    width: 30px;
+    height: 30px;
+}
+
+.icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+
+.icon .svg {
+    fill: rgba(255, 255, 255, 0.797);
+    width: 100%;
+    transition: all 0.5s ease-in-out;
+}
+
+.box {
+    position: absolute;
+    padding: 10px;
+    text-align: right;
+    background: rgba(255, 255, 255, 0.389);
+    border-top: 2px solid rgb(255, 255, 255);
+    border-right: 1px solid white;
+    border-radius: 10% 13% 42% 0%/10% 12% 75% 0%;
+    box-shadow: rgba(100, 100, 111, 0.364) -7px 7px 29px 0px;
+    transform-origin: bottom left;
+    transition: all 1s ease-in-out;
+}
+
+.box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+.box:hover .svg { fill: white; }
+
+.box1 { width: 70%; height: 70%; bottom: -70%; left: -70%; }
+.box1::before { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #ff53d4 60%, #62c2fe 90%); }
+.box1:hover::before { opacity: 1; }
+.box1:hover .icon .svg { filter: drop-shadow(0 0 5px white); }
+
+.box2 { width: 50%; height: 50%; bottom: -50%; left: -50%; transition-delay: 0.2s; }
+.box2::before { background: radial-gradient(circle at 30% 107%, #91e9ff 0%, #00ACEE 90%); }
+.box2:hover::before { opacity: 1; }
+.box2:hover .icon .svg { filter: drop-shadow(0 0 5px white); }
+
+.box3 { width: 30%; height: 30%; bottom: -30%; left: -30%; transition-delay: 0.4s; }
+.box3::before { background: radial-gradient(circle at 30% 107%, #969fff 0%, #b349ff 90%); }
+.box3:hover::before { opacity: 1; }
+.box3:hover .icon .svg { filter: drop-shadow(0 0 5px white); }
+
+.box4 { width: 10%; height: 10%; bottom: -10%; left: -10%; transition-delay: 0.6s; }
+
+.card:hover { transform: scale(1.1); }
+.card:hover .box { bottom: -1px; left: -1px; }
+.card:hover .logo { transform: translate(0, 0); bottom: 20px; right: 20px; }
+
+.card .text { position: relative; z-index: 1; padding: 16px 20px 24px; text-align: center; }
+.card .text .work-title { font-size: 20px; color:#2d3748; font-weight: 600; margin-bottom: 8px; }
+.card .text .work-desc {
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+.card:hover .text .work-desc {
+    opacity: 1;
 }
 
 /* 主页横幅 */

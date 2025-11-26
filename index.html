@@ -299,7 +299,7 @@
             color: #4a5568;
             font-weight: 500;
         }
-        input, textarea {
+        .container input, .container textarea {
             width: 100%;
             padding: 14px;
             border: 1px solid #e2e8f0;
@@ -307,7 +307,7 @@
             font-size: 16px;
             transition: border-color 0.3s;
         }
-        input:focus, textarea:focus {
+        .container input:focus, .container textarea:focus {
             outline: none;
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
@@ -408,35 +408,25 @@
         <!-- 作品卡片容器 -->
         <div class="works-container">
             <!-- 作品1：二维码生成器（卡片本身为可点击链接） -->
-            <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card">
-                <div class="work-icon">
-                    <!-- 二维码SVG图标（无需额外图片） -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <rect x="7" y="7" width="3" height="3"></rect>
-                        <rect x="7" y="14" width="3" height="3"></rect>
-                        <rect x="14" y="7" width="3" height="3"></rect>
-                        <rect x="14" y="14" width="3" height="3"></rect>
-                    </svg>
+            <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card card">
+                <div class="background"></div>
+                <div class="logo">
+                    <h3 class="work-title">二维码生成器</h3>
                 </div>
-                <h3 class="work-title">二维码生成器</h3>
-                <p class="work-desc">在线生成高清二维码，支持文本、网址等内容，可直接保存使用，简单便捷</p>
+                <div class="text">
+                    <p class="work-desc">在线生成高清二维码，支持文本、网址等内容，可直接保存使用，简单便捷</p>
+                </div>
             </a>
 
             <!-- 作品2：文字和谐处理脚本（卡片本身为可点击链接） -->
-            <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card">
-                <div class="work-icon">
-                    <!-- 文字处理SVG图标（无需额外图片） -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
+            <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card card">
+                <div class="background"></div>
+                <div class="logo">
+                    <h3 class="work-title">文字和谐处理脚本</h3>
                 </div>
-                <h3 class="work-title">文字和谐处理脚本</h3>
-                <p class="work-desc">自动识别敏感词汇，支持自定义关键词库，适用于内容审核、评论过滤场景</p>
+                <div class="text">
+                    <p class="work-desc">自动识别敏感词汇，支持自定义关键词库，适用于内容审核、评论过滤场景</p>
+                </div>
             </a>
         </div>
 
