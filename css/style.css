@@ -116,7 +116,7 @@ nav ul li a:hover {
     background: radial-gradient(circle at 100% 107%, #ff89cc 0%, #9cb8ec 30%, #00ffee 60%, #62c2fe 100%);
 }
 
-.logo {
+.card .card-logo {
     position: absolute;
     right: 50%;
     bottom: 50%;
@@ -125,7 +125,7 @@ nav ul li a:hover {
     z-index: 1;
 }
 
-.logo .logo-svg {
+.card-logo .logo-svg {
     fill: white;
     width: 30px;
     height: 30px;
@@ -186,7 +186,7 @@ nav ul li a:hover {
 
 .card:hover { transform: scale(1.1); }
 .card:hover .box { bottom: -1px; left: -1px; }
-.card:hover .logo { transform: translate(0, 0); bottom: 20px; right: 20px; }
+.card:hover .card-logo { transform: translate(0, 0); bottom: 20px; right: 20px; }
 
 .card .text { position: relative; z-index: 1; padding: 16px 20px 24px; text-align: center; }
 /* 卡片标题（居中显示，替代原 SVG logo） */
