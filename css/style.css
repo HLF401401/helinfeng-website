@@ -285,6 +285,9 @@ nav ul li a:hover {
 /* 加宽卡片后居中对齐网格项 */
 .works-container { justify-items: center; }
 
+/* 使用固定宽高卡片时移除 work-card 的默认内边距，避免视觉拥挤 */
+.card.work-card { padding: 0; }
+
 .works h2 {
     text-align: center;
     font-size: 2rem;
