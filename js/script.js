@@ -151,7 +151,3 @@ function initLangSwitch() {
 
 document.addEventListener('DOMContentLoaded', initLangSwitch);
 
-// 自动刷新（10分钟）：保持页面最新，但可能清空未提交的留言
-setInterval(() => {
-    location.reload();
-}, 600000);
