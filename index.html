@@ -3,750 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="贺林枫的个人网站 - 开发者、创作者">
     <title>贺林枫的网站</title>
-    <link rel="stylesheet" href="./css/style.css"> <!-- 引入 CSS -->
-    <style>
-        /* 验证码样式（保持不变） */
-        .captcha-wrapper {
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; /* 适配移动端换行 */
-        }
-
-        #captchaCanvas {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        #captchaCanvas:hover {
-            border-color: #666;
-        }
-
-        #captchaInput {
-            padding: 8px 10px;
-            width: 120px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            outline: none;
-            transition: border-color 0.3s;
-            font-size: 14px;
-        }
-
-        #captchaInput:focus {
-            border-color: #4299e1;
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
-        }
-
-        .captcha-message {
-            margin: 5px 0 0 0;
-            font-size: 14px;
-            height: 20px;
-            color: #e53e3e; /* 默认错误色 */
-        }
-
-        .captcha-message.success {
-            color: #48bb78; /* 成功色 */
-        }
-
-        /* 确保与原有 btn 样式兼容（保持不变） */
-        .contact-form .btn {
-            margin-top: 10px;
-        }
-
-        /* 欢迎弹窗样式（重点：用flex强制底部按钮居右） */
-        .modal-mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            backdrop-filter: blur(2px);
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 400px;
-            padding: 24px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            transform: translateY(-20px);
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .modal-mask.active .modal-content {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #ff6b6b;
-        }
-
-        /* 右上角关闭按钮（样式不变） */
-        .modal-close {
-            border: none;
-            background: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #9ca3af;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close:hover {
-            color: #ff6b6b;
-            background: #fef2f2;
-        }
-
-        .modal-body {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .modal-body p {
-            font-size: 16px;
-            color: #4b5563;
-            line-height: 1.8;
-        }
-
-        /* 核心修改：用 flex 布局强制底部按钮居右（优先级最高） */
-        .modal-footer {
-            display: flex; /* 开启 flex 布局 */
-            justify-content: flex-end; /* 子元素居右 */
-            width: 100%; /* 占满弹窗宽度 */
-            margin-top: 16px; /* 与内容区保持距离 */
-        }
-
-        /* 底部关闭按钮（单独设置样式，避免继承冲突） */
-        .modal-footer .modal-close {
-            padding: 8px 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #2d3748;
-            background: #f9fafb;
-            width: auto;
-            height: auto;
-            border-radius: 4px;
-            /* 取消父级的 flex 居中，确保按钮正常显示 */
-            display: inline-block;
-        }
-
-        .modal-footer .modal-close:hover {
-            background: #f3f4f6;
-            border-color: #d1d5db;
-            color: #111827;
-        }
-
-        /* 新增：作品卡片样式（独立模块，不影响其他区域） */
-        .works {
-            padding: 60px 20px;
-            background-color: #f8f9fa;
-        }
-
-        .works h2 {
-            text-align: center;
-            color: #2d3748;
-            margin-bottom: 40px;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .works-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-            gap: 40px;
-        }
-
-        /* 作品卡片（可点击按钮样式） */
-        .work-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            padding: 35px 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none; /* 清除链接下划线 */
-        }
-
-        .work-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            background-color: #fafafa;
-        }
-
-        .work-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            background-color: #e8f4f8;
-        }
-
-        .work-icon svg {
-            width: 32px;
-            height: 32px;
-            color: #4299e1;
-        }
-
-        .work-title {
-            font-size: 20px;
-            color: #2d3748;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .work-desc {
-            font-size: 14px;
-            color: #718096;
-            line-height: 1.6;
-        }
-
-        /* GitHub链接容器样式调整 */
-        .github-link {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        .github-link .btn {
-            display: inline-block;
-            padding: 10px 24px;
-            background-color: #2d3748;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .github-link .btn:hover {
-            background-color: #1a202c;
-        }
-    </style>
-    <!-- 合并重复的head标签，避免样式冲突 -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QQ邮箱留言直达</title>
-    <!-- 引入Axios（处理接口请求） -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        body {
-            background-color: #f5f7fa;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        h2 {
-            color: #2d3748;
-            margin-bottom: 25px;
-            text-align: center;
-            font-size: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #4a5568;
-            font-weight: 500;
-        }
-        .container input, .container textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        .container input:focus, .container textarea:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-        }
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-            padding-top: 12px;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #4299e1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:disabled {
-            background-color: #cbd5e1;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
-            background-color: #3182ce;
-        }
-        .tip {
-            margin-top: 12px;
-            font-size: 14px;
-            text-align: center;
-        }
-        .success {
-            color: #10b981;
-        }
-        .error {
-            color: #ef4444;
-        }
-        .loading {
-            color: #64748b;
-        }
-    </style>
 </head>
-<!-- 保留唯一的body标签，删除重复的body -->
 <body>
-    <!-- 欢迎弹窗（HTML结构不变） -->
-    <div class="modal-mask" id="modalMask">
-        <div class="modal-content">
+    <!-- Welcome Modal -->
+    <div class="modal-mask" id="welcomeModal">
+        <div class="modal-card">
             <div class="modal-header">
-                <h3 class="modal-title">欢迎来到贺林枫的网站！</h3>
-                <button class="modal-close" id="closeBtn">&times;</button>
+                <span class="modal-icon">👋</span>
+                <h3 class="modal-title" data-i18n="modal.title">欢迎来到贺林枫的网站！</h3>
             </div>
-            <div class="modal-body">
-                <p>欢迎光临</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-close">关闭</button>
-            </div>
+            <p class="modal-body" data-i18n="modal.body">欢迎光临</p>
+            <button class="modal-close-btn" id="modalCloseBtn" data-i18n="modal.close">关闭</button>
         </div>
     </div>
 
-    <!-- 以下网站原有内容保持不变 -->
-    <header>
-        <nav>
-            <div class="logo">贺林枫的网站</div>
-            <ul>
-                <li><a href="#home">首页</a></li>
-                <li><a href="#about">关于我</a></li>
-                <li><a href="#works">我的作品</a></li>
-                <li><a href="#contact">联系方式</a></li>
+    <!-- Navigation -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <a href="#home" class="logo" data-i18n="nav.logo">贺林枫的网站</a>
+            <ul class="nav-links">
+                <li><a href="#home" data-i18n="nav.home">首页</a></li>
+                <li><a href="#about" data-i18n="nav.about">关于我</a></li>
+                <li><a href="#works" data-i18n="nav.works">我的作品</a></li>
+                <li><a href="#contact" data-i18n="nav.contact">联系方式</a></li>
             </ul>
-            <div class="lang-switch">
-                <button type="button" id="langZh" class="lang-btn">中文</button>
-                <button type="button" id="langEn" class="lang-btn">English</button>
+            <div class="nav-actions">
+                <div class="lang-switch">
+                    <button id="langZh" class="lang-btn active" aria-label="切换到中文">中</button>
+                    <button id="langEn" class="lang-btn" aria-label="Switch to English">EN</button>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
             </div>
         </nav>
     </header>
 
+    <!-- Hero -->
     <section id="home" class="hero">
+        <div class="hero-bg"></div>
         <div class="hero-content">
-            <h1>你好，我是贺林枫</h1>
-            <p>欢迎来到我的个人网站</p>
-            <a href="#about" class="btn">了解更多</a>
+            <p class="hero-greeting" data-i18n="hero.greeting">你好，我是</p>
+            <h1 class="hero-name">贺林枫</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">欢迎来到我的个人网站</p>
+            <div class="hero-actions">
+                <a href="#about" class="btn btn-primary" data-i18n="hero.cta">了解更多</a>
+                <a href="#works" class="btn btn-outline" data-i18n="hero.works">查看作品</a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span data-i18n="hero.scroll">向下滚动</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
         </div>
     </section>
 
-    <section id="about" class="about">
-        <h2>关于我</h2>
+    <!-- About -->
+    <section id="about" class="about reveal">
+        <div class="section-header">
+            <h2 data-i18n="about.title">关于我</h2>
+            <p class="section-subtitle" data-i18n="about.subtitle">一个热爱技术与创造的普通人</p>
+        </div>
         <div class="about-content">
-            <img src="images/avatar.jpg" alt="贺林枫头像" class="avatar">
-            <p>一个普通人</p>
+            <div class="about-image">
+                <img src="images/avatar.jpg" alt="贺林枫头像" class="avatar">
+            </div>
+            <div class="about-text">
+                <p data-i18n="about.p1">你好，我是贺林枫。一个喜欢折腾各种技术、热爱创造的开发者。</p>
+                <p data-i18n="about.p2">我相信技术应该让生活更简单、更有趣。无论是制作实用工具，还是探索新的可能性，我都享受从零到一的过程。</p>
+                <div class="about-links">
+                    <a href="https://github.com/yourusername" target="_blank" class="about-link" rel="noopener">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- 优化后的“我的作品”板块：独立卡片+可点击跳转 -->
-    <section id="works" class="works">
-        <h2>我的作品</h2>
-        <!-- 搜索输入框：用于实时筛选作品卡片（支持模糊匹配） -->
+    <!-- Works -->
+    <section id="works" class="works reveal">
+        <div class="section-header">
+            <h2 data-i18n="works.title">我的作品</h2>
+            <p class="section-subtitle" data-i18n="works.subtitle">一些我制作的小工具</p>
+        </div>
         <div class="works-search">
-            <input type="text" id="worksSearch" class="search-input" placeholder="搜索我的作品...">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="worksSearch" class="search-input" data-i18n-placeholder="works.search" placeholder="搜索我的作品...">
         </div>
-        <!-- 作品卡片容器 -->
-        <div class="works-container">
-            <!-- 作品1：二维码生成器（卡片本身为可点击链接） -->
-            <!-- 卡片组件：背景 + 标题（logo区） + 描述；移除四个插入框，简化 UI -->
-            <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card card">
-                <div class="background"></div>
-                <div class="card-logo">
-                    <h3 class="work-title">二维码生成器</h3>
+        <div class="works-grid" id="worksGrid">
+            <a href="https://hlf401401.github.io/create-QRcode/" target="_blank" class="work-card" rel="noopener">
+                <div class="work-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                 </div>
-                <div class="text">
-                    <p class="work-desc">在线生成高清二维码，支持文本、网址等内容，可直接保存使用，简单便捷</p>
-                </div>
+                <h3 class="work-card-title" data-i18n="works.card1.title">二维码生成器</h3>
+                <p class="work-card-desc" data-i18n="works.card1.desc">在线生成高清二维码，支持文本、网址等内容，可直接保存使用，简单便捷</p>
+                <span class="work-card-tag">工具</span>
             </a>
-
-            <!-- 作品2：文字和谐处理脚本（卡片本身为可点击链接） -->
-            <!-- 卡片组件：背景 + 标题（logo区） + 描述；移除四个插入框，简化 UI -->
-            <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card card">
-                <div class="background"></div>
-                <div class="card-logo">
-                    <h3 class="work-title">文字和谐处理脚本</h3>
+            <a href="https://soujiaoben.org/#/s?id=553837&host=greasyfork" target="_blank" class="work-card" rel="noopener">
+                <div class="work-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </div>
-                <div class="text">
-                    <p class="work-desc">自动识别敏感词汇，支持自定义关键词库，适用于内容审核、评论过滤场景</p>
-                </div>
+                <h3 class="work-card-title" data-i18n="works.card2.title">文字和谐处理脚本</h3>
+                <p class="work-card-desc" data-i18n="works.card2.desc">自动识别敏感词汇，支持自定义关键词库，适用于内容审核、评论过滤场景</p>
+                <span class="work-card-tag">脚本</span>
             </a>
-
-            <!-- 作品3：文字和谐处理脚本（扩展） -->
-            <!-- 卡片组件：背景 + 标题（logo区） + 描述；样式与前两张一致 -->
-            <a href="https://soujiaoben.org/#/s?id=557905&host=greasyfork" target="_blank" class="work-card card">
-                <div class="background"></div>
-                <div class="card-logo">
-                    <h3 class="work-title">文字和谐处理脚本（AI版）</h3>
+            <a href="https://soujiaoben.org/#/s?id=557905&host=greasyfork" target="_blank" class="work-card" rel="noopener">
+                <div class="work-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 </div>
-                <div class="text">
-                    <p class="work-desc">使用ai识别并屏蔽脏话，实现文字和谐，需填充阿里云key</p>
-                </div>
+                <h3 class="work-card-title" data-i18n="works.card3.title">文字和谐处理脚本（AI版）</h3>
+                <p class="work-card-desc" data-i18n="works.card3.desc">使用AI识别并屏蔽脏话，实现文字和谐，需填充阿里云key</p>
+                <span class="work-card-tag">AI</span>
             </a>
         </div>
-
-        <!-- GitHub链接（保持原有功能，样式优化） -->
-        <div class="github-link">
-            <a href="https://github.com/yourusername" target="_blank" class="btn">登录 GitHub</a>
+        <div class="works-empty" id="worksEmpty" style="display:none">
+            <p data-i18n="works.empty">没有找到匹配的作品</p>
         </div>
     </section>
 
-    <div class="container">
-        <h2>留言反馈（QQ邮箱直达）</h2>
-        
-        <div class="form-group">
-            <label for="qqEmail">你的QQ邮箱（将作为发件人）</label>
-            <input 
-                type="email" 
-                id="qqEmail" 
-                placeholder="例如：123456@qq.com" 
-                required
-            >
+    <!-- Contact -->
+    <section id="contact" class="contact reveal">
+        <div class="section-header">
+            <h2 data-i18n="contact.title">联系我</h2>
+            <p class="section-subtitle" data-i18n="contact.subtitle">欢迎留言或通过以下方式联系</p>
         </div>
-
-        <div class="form-group">
-            <label for="message">留言内容</label>
-            <textarea 
-                id="message" 
-                placeholder="请输入你的反馈、建议或问题..." 
-                required
-            ></textarea>
-        </div>
-        <div class="captcha-wrapper">
-            <canvas id="captchaCanvas" width="160" height="50"></canvas>
-            <input type="text" id="captchaInput" placeholder="请输入验证码" maxlength="4" required>
-        </div>
-        <div class="captcha-message" id="captchaMessage"></div>
-        
-        <button onclick="submitMessage()">提交留言</button>
-        <p id="tip" class="tip"></p>
-    </div>
-    <section id="contact" class="contact">
-        <h2>联系方式</h2>
-        <div class="contact-info">
-            <p>邮箱：1340933251@qq.com</p>
-            <p>微信：H18954806951</p>
+        <div class="contact-grid">
+            <div class="contact-form-card">
+                <h3 class="form-title" data-i18n="contact.form.title">留言反馈（QQ邮箱直达）</h3>
+                <div class="form-group">
+                    <label for="qqEmail" data-i18n="contact.form.email">你的QQ邮箱（将作为发件人）</label>
+                    <input type="email" id="qqEmail" placeholder="例如：123456@qq.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageText" data-i18n="contact.form.message">留言内容</label>
+                    <textarea id="messageText" placeholder="请输入你的反馈、建议或问题..." rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="contact.form.captcha">验证码（点击刷新）</label>
+                    <div class="captcha-row">
+                        <canvas id="captchaCanvas" width="140" height="44"></canvas>
+                        <input type="text" id="captchaInput" placeholder="输入验证码" maxlength="4" required>
+                    </div>
+                    <p class="captcha-message" id="captchaMessage"></p>
+                </div>
+                <button class="btn btn-primary btn-full" id="submitBtn" onclick="submitMessage()" data-i18n="contact.form.submit">提交留言</button>
+                <p class="form-tip" id="formTip"></p>
+            </div>
+            <div class="contact-info-card">
+                <h3 data-i18n="contact.info.title">联系方式</h3>
+                <div class="contact-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <span>1340933251@qq.com</span>
+                </div>
+                <div class="contact-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    <span>H18954806951</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2025 贺林枫的网站. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p data-i18n="footer.copy">&copy; 2025 贺林枫的网站. All rights reserved.</p>
+            <p class="footer-built">Built with ❤️</p>
+        </div>
     </footer>
 
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" aria-label="返回顶部">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+
     <script src="./js/script.js"></script>
-    <script>
-        // 全局变量：用于存储验证码验证状态和函数，供外部调用
-        let validCode = '';
-        let isCaptchaValid = false;
-
-        // 验证码模块（修改为全局可访问）
-        (function() {
-            const canvas = document.getElementById('captchaCanvas');
-            const ctx = canvas.getContext('2d');
-            const captchaInput = document.getElementById('captchaInput');
-            const captchaMessage = document.getElementById('captchaMessage');
-            const messageForm = document.getElementById('messageForm');
-
-            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
-
-            window.randomNum = function(min, max) {
-                return Math.floor(Math.random() * (max - min + 1) + min);
-            }
-
-            window.randomColor = function(min, max) {
-                const r = randomNum(min, max);
-                const g = randomNum(min, max);
-                const b = randomNum(min, max);
-                return `rgb(${r},${g},${b})`;
-            }
-
-            // 验证码绘制函数（全局可访问）
-            window.drawCaptcha = function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = randomColor(240, 255);
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                validCode = '';
-
-                for (let i = 0; i < 4; i++) {
-                    const char = chars[randomNum(0, chars.length - 1)];
-                    validCode += char;
-                    ctx.font = `${randomNum(28, 36)}px Arial, sans-serif`;
-                    ctx.fillStyle = randomColor(50, 160);
-                    ctx.textBaseline = 'middle';
-                    const angle = randomNum(-30, 30) * Math.PI / 180;
-                    ctx.save();
-                    ctx.translate(40 * i + 20, canvas.height / 2);
-                    ctx.rotate(angle);
-                    ctx.fillText(char, -12, 0);
-                    ctx.restore();
-                }
-
-                for (let i = 0; i < 5; i++) {
-                    ctx.strokeStyle = randomColor(100, 200);
-                    ctx.lineWidth = randomNum(1, 2);
-                    ctx.beginPath();
-                    ctx.moveTo(randomNum(0, canvas.width), randomNum(0, canvas.height));
-                    ctx.lineTo(randomNum(0, canvas.width), randomNum(0, canvas.height));
-                    ctx.stroke();
-                }
-
-                for (let i = 0; i < 80; i++) {
-                    ctx.fillStyle = randomColor(150, 220);
-                    ctx.beginPath();
-                    ctx.arc(randomNum(0, canvas.width), randomNum(0, canvas.height), 1, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                isCaptchaValid = false;
-                captchaMessage.textContent = '';
-            }
-
-            // 验证码验证函数（全局可访问，供submitMessage调用）
-            window.verifyCaptcha = function() {
-                const inputVal = captchaInput.value.trim().toUpperCase();
-                if (!inputVal) {
-                    captchaMessage.textContent = '请输入验证码';
-                    captchaMessage.className = 'captcha-message';
-                    return false;
-                }
-                if (inputVal === validCode.toUpperCase()) {
-                    captchaMessage.textContent = '验证成功';
-                    captchaMessage.className = 'captcha-message success';
-                    isCaptchaValid = true;
-                    return true;
-                } else {
-                    captchaMessage.textContent = '验证码错误，请重新输入';
-                    captchaMessage.className = 'captcha-message';
-                    drawCaptcha();
-                    captchaInput.value = '';
-                    isCaptchaValid = false;
-                    return false;
-                }
-            }
-
-            // 初始化验证码
-            drawCaptcha();
-            canvas.addEventListener('click', drawCaptcha);
-            captchaInput.addEventListener('blur', verifyCaptcha);
-            captchaInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') verifyCaptcha();
-            });
-            // 修复：原代码可能存在messageForm不存在的情况，添加判断
-            if (messageForm) {
-                messageForm.addEventListener('submit', (e) => {
-                    const captchaPass = verifyCaptcha();
-                    if (!captchaPass) {
-                        e.preventDefault();
-                        alert('请先完成验证码验证');
-                    }
-                });
-            }
-        })();
-
-        // 欢迎弹窗功能（保持不变）
-        (function() {
-            const modalMask = document.getElementById('modalMask');
-            const closeBtns = document.querySelectorAll('.modal-close');
-
-            function openModal() {
-                modalMask.style.display = 'flex';
-                setTimeout(() => {
-                    modalMask.classList.add('active');
-                }, 10);
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeModal() {
-                modalMask.classList.remove('active');
-                setTimeout(() => {
-                    modalMask.style.display = 'none';
-                }, 300);
-                document.body.style.overflow = 'auto';
-            }
-
-            window.addEventListener('load', openModal);
-            closeBtns.forEach(btn => {
-                btn.addEventListener('click', closeModal);
-            });
-            modalMask.addEventListener('click', (e) => {
-                if (e.target === modalMask) closeModal();
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modalMask.style.display === 'flex') {
-                    closeModal();
-                }
-            });
-        })();
-
-        // 留言提交核心逻辑（保持不变，现在可正常调用verifyCaptcha）
-        // const API_BASE_URL = "https://mail-theta-one.vercel.app";
-        // const API_BASE_URL = "https://vercel-proxy-123.1340933251.workers.dev";
-        const API_BASE_URL = "https://api.hlf-website.site";
-        function submitMessage() {
-            // 获取DOM元素
-            const emailInput = document.getElementById("qqEmail");
-            const messageInput = document.getElementById("message");
-            const tipElement = document.getElementById("tip");
-            const submitBtn = document.querySelector("button");
-            const captchaInput = document.getElementById("captchaInput");
-            
-            // 验证验证码（现在可正常调用全局函数）
-            const captchaValid = verifyCaptcha();
-            if (!captchaValid) {
-                showTip("请先完成验证码验证", "error");
-                return;
-            }
-
-            // 获取输入值（去除首尾空格）
-            const senderEmail = emailInput.value.trim();
-            const messageContent = messageInput.value.trim();
-
-            // 1. 前端校验
-            if (!validateQQEmail(senderEmail)) {
-                showTip("请输入有效的QQ邮箱（格式：xxx@qq.com）", "error");
-                return;
-            }
-            if (messageContent.length === 0) {
-                showTip("留言内容不能为空哦～", "error");
-                return;
-            }
-            if (messageContent.length > 1000) {
-                showTip("留言内容不能超过1000字，请精简后提交", "error");
-                return;
-            }
-
-            // 2. 提交中状态（防止重复点击）
-            submitBtn.disabled = true;
-            submitBtn.textContent = "发送中...";
-            showTip("正在发送，请稍候...", "loading");
-
-            try {
-                // 3. 调用后端接口发送邮件
-                axios.post(
-                    `${API_BASE_URL}/api/send-direct`,
-                    {
-                        senderEmail: senderEmail, // 用户QQ邮箱（发件人）
-                        content: messageContent    // 留言内容
-                    },
-                    {
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
-                ).then(response => {
-                    // 4. 处理接口响应
-                    if (response.data.success) {
-                        showTip("发送成功！你的留言已直达目标邮箱～", "success");
-                        // 清空输入框
-                        emailInput.value = "";
-                        messageInput.value = "";
-                        captchaInput.value = "";
-                        // 刷新验证码
-                        drawCaptcha();
-                    } else {
-                        showTip(`发送失败：${response.data.message || "未知错误"}`, "error");
-                    }
-                }).catch(error => {
-                    // 5. 捕获网络错误
-                    console.error("接口请求失败：", error);
-                    showTip("网络异常，请检查网络后重试", "error");
-                }).finally(() => {
-                    // 6. 恢复按钮状态
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "提交留言";
-                });
-            } catch (error) {
-                console.error("提交异常：", error);
-                showTip("系统异常，请稍后重试", "error");
-                submitBtn.disabled = false;
-                submitBtn.textContent = "提交留言";
-            }
-        }
-
-        /**
-         * 校验QQ邮箱格式
-         * @param {string} email - 待校验邮箱
-         * @returns {boolean} 校验结果
-         */
-        function validateQQEmail(email) {
-            const reg = /^[1-9]\d{4,10}@qq\.com$/; // QQ邮箱正则：5-11位数字（首位非0）+@qq.com
-            return reg.test(email);
-        }
-
-        /**
-         * 显示提示信息
-         * @param {string} text - 提示文本
-         * @param {string} type - 提示类型（success/error/loading）
-         */
-        function showTip(text, type) {
-            const tipElement = document.getElementById("tip");
-            tipElement.textContent = text;
-            tipElement.className = `tip ${type}`;
-        }
-    </script>
 </body>
 </html>
